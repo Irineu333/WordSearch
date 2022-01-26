@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.core.view.children
 import androidx.core.view.get
 import androidx.core.view.setPadding
+import timber.log.Timber
 
 class GameView(
     context: Context, attr: AttributeSet? = null
@@ -27,14 +28,28 @@ class GameView(
     }
 
     private fun adjust() {
+        val wordHeight = measuredHeight / length
+        val wordWidth = measuredWidth / length
+
+        Timber.i("wordHeight $wordHeight")
+        Timber.i("wordWidth $wordWidth")
+
         for (view in children) {
-            view.layoutParams = LayoutParams(
-                measuredWidth, measuredHeight / length
-            )
-            for (text in (view as ViewGroup).children) {
-                text.layoutParams = LayoutParams(
-                    measuredWidth / length, measuredHeight / length
-                )
+            view.layoutParams.apply {
+
+                width = measuredWidth
+                height = wordHeight
+
+                view.layoutParams = this
+            }
+            for (word in (view as ViewGroup).children) {
+                word.layoutParams.apply {
+
+                    width = wordWidth
+                    height = wordHeight
+
+                    word.layoutParams = this
+                }
             }
         }
     }
@@ -52,15 +67,13 @@ class GameView(
             }
 
             for (j in 0 until length) {
-                container.addView(
-                    WordView(context), j
-                )
+                container.addView(WordView(context), j)
             }
 
             addView(container, i)
         }
 
-        invalidate()
+        adjust()
     }
 
     fun renderPuzzle(puzzle: Array<Array<String>>) {
