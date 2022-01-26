@@ -9,12 +9,14 @@ import androidx.core.view.children
 import androidx.core.view.get
 import androidx.core.view.setPadding
 import timber.log.Timber
+import kotlin.math.max
 
-class GameView(
+class WordBoard(
     context: Context, attr: AttributeSet? = null
 ) : LinearLayout(context, attr) {
 
     private var length = 0
+    private var size = 0
 
     init {
         orientation = VERTICAL
@@ -24,29 +26,29 @@ class GameView(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
 
-        adjust()
+        size = max(measuredWidth, measuredHeight)
+
+        adjustWordsSize()
     }
 
-    private fun adjust() {
-        val wordHeight = measuredHeight / length
-        val wordWidth = measuredWidth / length
+    private fun adjustWordsSize() {
+        val wordSize = size / length
 
-        Timber.i("wordHeight $wordHeight")
-        Timber.i("wordWidth $wordWidth")
+        Timber.i("adjustWordsSize -> $wordSize")
 
         for (view in children) {
             view.layoutParams.apply {
 
                 width = measuredWidth
-                height = wordHeight
+                height = wordSize
 
                 view.layoutParams = this
             }
             for (word in (view as ViewGroup).children) {
                 word.layoutParams.apply {
 
-                    width = wordWidth
-                    height = wordHeight
+                    width = wordSize
+                    height = wordSize
 
                     word.layoutParams = this
                 }
@@ -64,16 +66,15 @@ class GameView(
                 orientation = HORIZONTAL
                 gravity = Gravity.CENTER
 
-            }
+                for (j in 0 until length) {
+                    addView(WordView(context), j)
+                }
 
-            for (j in 0 until length) {
-                container.addView(WordView(context), j)
             }
-
             addView(container, i)
         }
 
-        adjust()
+        adjustWordsSize()
     }
 
     fun renderPuzzle(puzzle: Array<Array<String>>) {
@@ -85,14 +86,14 @@ class GameView(
             createPuzzle(puzzle.size)
         }
 
-        puzzle.forEachIndexed { i, it ->
-            it.forEachIndexed { j, word ->
-                setText(i, j, word)
+        puzzle.forEachIndexed { h, it ->
+            it.forEachIndexed { v, word ->
+                setText(h, v, word)
             }
         }
     }
 
-    private fun setText(i: Int, j: Int, word: String) {
-        ((getChildAt(i) as ViewGroup)[j] as WordView).text = word
+    private fun setText(h: Int, v: Int, word: String) {
+        ((getChildAt(h) as ViewGroup)[v] as WordView).text = word
     }
 }

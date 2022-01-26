@@ -40,8 +40,8 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun randomPuzzle(x: Int, y: Int): Array<Array<String>> {
-        val array = Array(x) { Array(y) { "A" } }
+    private fun randomPuzzle(z: Int, v: Int): Array<Array<String>> {
+        val array = Array(z) { Array(v) { "A" } }
 
         array.forEach {
             for (index in it.indices) {

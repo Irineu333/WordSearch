@@ -43,7 +43,7 @@
 
     </LinearLayout>
 
-    <com.neo.wordsearch.GameView
+    <com.neo.wordsearch.WordBoard
         android:background="@drawable/background_game_view"
         android:id="@+id/game_view"
         android:layout_width="match_parent"
