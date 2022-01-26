@@ -21,13 +21,12 @@ class GameActivity : AppCompatActivity() {
     private fun init() {
         Timber.i("init")
 
-        val puzzle = arrayOf(
+        val puzzle3x3 = arrayOf(
             arrayOf("A", "B", "C"),
             arrayOf("D", "E", "F"),
             arrayOf("G", "H", "I")
         )
 
-        binding.gameView.createPuzzle(puzzle.size)
-        binding.gameView.renderPuzzle(puzzle)
+        binding.gameView.renderPuzzle(puzzle3x3)
     }
 }

@@ -39,7 +39,7 @@ class GameView(
         }
     }
 
-    fun createPuzzle(length: Int) {
+    private fun createPuzzle(length: Int) {
         this.length = length
         removeAllViews()
 
@@ -65,8 +65,12 @@ class GameView(
 
     fun renderPuzzle(puzzle: Array<Array<String>>) {
 
-        if (puzzle.any { it.size != puzzle.size or length })
+        if (puzzle.any { it.size != puzzle.size })
             throw IllegalArgumentException("horizontal and vertical length must be equals")
+
+        if (puzzle.size != length) {
+            createPuzzle(puzzle.size)
+        }
 
         puzzle.forEachIndexed { i, it ->
             it.forEachIndexed { j, word ->
