@@ -6,6 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".GameActivity">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/game_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/n5x5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5x5" />
+
+
+        <Button
+            android:id="@+id/n10x10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10x10" />
+
+        <Button
+            android:id="@+id/n15x15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15x15" />
+
+        <Button
+            android:id="@+id/n20x20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20x20" />
+
+
+    </LinearLayout>
+
     <com.neo.wordsearch.GameView
         android:background="@drawable/background_game_view"
         android:id="@+id/game_view"
