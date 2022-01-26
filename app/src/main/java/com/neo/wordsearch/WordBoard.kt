@@ -1,6 +1,7 @@
 package com.neo.wordsearch
 
 import android.content.Context
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.ViewGroup
@@ -15,8 +16,8 @@ class WordBoard(
     context: Context, attr: AttributeSet? = null
 ) : LinearLayout(context, attr) {
 
-    private var length = 0
-    private var size = 0
+    private var wordSize = 0
+    private var boardSize = 0
 
     init {
         orientation = VERTICAL
@@ -26,38 +27,48 @@ class WordBoard(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
 
-        size = max(measuredWidth, measuredHeight)
+        boardSize = max(measuredWidth, measuredHeight)
+
+    }
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
 
         adjustWordsSize()
     }
 
     private fun adjustWordsSize() {
-        val wordSize = size / length
 
-        Timber.i("adjustWordsSize -> $wordSize")
+        if (wordSize == 0) return
+
+        val wordsSize = boardSize / wordSize
+
+        Timber.i("words size -> $wordsSize")
+        Timber.i("board size -> $boardSize")
 
         for (view in children) {
             view.layoutParams.apply {
 
-                width = measuredWidth
-                height = wordSize
+                width = boardSize
+                height = wordsSize
 
-                view.layoutParams = this
+                requestLayout()
             }
             for (word in (view as ViewGroup).children) {
-                word.layoutParams.apply {
+                val wordView = word as WordView
+                wordView.layoutParams.apply {
 
-                    width = wordSize
-                    height = wordSize
+                    width = wordsSize
+                    height = wordsSize
 
-                    word.layoutParams = this
+                    requestLayout()
                 }
             }
         }
     }
 
     private fun createPuzzle(length: Int) {
-        this.length = length
+        this.wordSize = length
         removeAllViews()
 
         for (i in 0 until length) {
@@ -82,7 +93,7 @@ class WordBoard(
         if (puzzle.any { it.size != puzzle.size })
             throw IllegalArgumentException("horizontal and vertical length must be equals")
 
-        if (puzzle.size != length) {
+        if (puzzle.size != wordSize) {
             createPuzzle(puzzle.size)
         }
 
