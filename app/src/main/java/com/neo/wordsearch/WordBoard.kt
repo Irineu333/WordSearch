@@ -16,8 +16,10 @@ class WordBoard(
     context: Context, attr: AttributeSet? = null
 ) : LinearLayout(context, attr) {
 
-    private var wordSize = 0
-    private var boardSize = 0
+    private var wordLength = 0
+    private var boardSizePx = 0
+
+    private val wordsSizePx get() = boardSizePx / wordLength
 
     init {
         orientation = VERTICAL
@@ -27,30 +29,27 @@ class WordBoard(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
 
-        boardSize = max(measuredWidth, measuredHeight)
-
-    }
-
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
+        boardSizePx = max(measuredWidth, measuredHeight)
 
         adjustWordsSize()
     }
 
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+    }
+
     private fun adjustWordsSize() {
 
-        if (wordSize == 0) return
+        if (wordLength == 0) return
 
-        val wordsSize = boardSize / wordSize
-
-        Timber.i("words size -> $wordsSize")
-        Timber.i("board size -> $boardSize")
+        Timber.i("words size -> $wordsSizePx")
+        Timber.i("board size -> $boardSizePx")
 
         for (view in children) {
             view.layoutParams.apply {
 
-                width = boardSize
-                height = wordsSize
+                width = boardSizePx
+                height = wordsSizePx
 
                 requestLayout()
             }
@@ -58,8 +57,8 @@ class WordBoard(
                 val wordView = word as WordView
                 wordView.layoutParams.apply {
 
-                    width = wordsSize
-                    height = wordsSize
+                    width = wordsSizePx
+                    height = wordsSizePx
 
                     requestLayout()
                 }
@@ -68,7 +67,13 @@ class WordBoard(
     }
 
     private fun createPuzzle(length: Int) {
-        this.wordSize = length
+
+        if (length <= 0) throw IllegalArgumentException("length not be 0 or negative")
+
+        this.wordLength = length
+
+        Timber.i("word length -> $length")
+
         removeAllViews()
 
         for (i in 0 until length) {
@@ -93,7 +98,7 @@ class WordBoard(
         if (puzzle.any { it.size != puzzle.size })
             throw IllegalArgumentException("horizontal and vertical length must be equals")
 
-        if (puzzle.size != wordSize) {
+        if (puzzle.size != wordLength) {
             createPuzzle(puzzle.size)
         }
 

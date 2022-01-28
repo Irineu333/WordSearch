@@ -1,19 +1,16 @@
 package com.neo.wordsearch
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.ViewGroup
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import timber.log.Timber
 
-@SuppressLint("AppCompatCustomView")
 class WordView(
     context: Context,
     attr: AttributeSet? = null
-) : TextView(context, attr) {
+) : AppCompatTextView(context, attr) {
 
     private var textPercentSize = 0.80f
 
