@@ -107,55 +107,34 @@ class LetterBoard(
 
             if (abs(columnDiff) != abs(rowDiff)) return null
 
-            var row = letterA.row
-            var column = letterA.column
+        }
+
+        var row = letterA.row
+        var column = letterA.column
+
+        result.append(letters[row - 1][column - 1])
+
+        while (columnDiff != 0 || rowDiff != 0) {
+            if (columnDiff != 0) {
+                if (columnDiff > 0) {
+                    columnDiff--
+                    column--
+                } else {
+                    columnDiff++
+                    column++
+                }
+            }
+            if (rowDiff != 0) {
+                if (rowDiff > 0) {
+                    rowDiff--
+                    row--
+                } else {
+                    rowDiff++
+                    row++
+                }
+            }
 
             result.append(letters[row - 1][column - 1])
-
-            while (columnDiff != 0 || rowDiff != 0) {
-                if (columnDiff != 0) {
-                    if (columnDiff > 0) {
-                        columnDiff--
-                        column--
-                    } else {
-                        columnDiff++
-                        column++
-                    }
-                }
-                if (rowDiff != 0) {
-                    if (rowDiff > 0) {
-                        rowDiff--
-                        row--
-                    } else {
-                        rowDiff++
-                        row++
-                    }
-                }
-
-                result.append(letters[row - 1][column - 1])
-            }
-
-        } else {
-
-            if (columnDiff != 0) {
-                val start = letterA.column
-                val end = letterB.column
-
-                val range = if (start < end) start..end else start downTo end
-
-                for (index in range) {
-                    result.append(letters[letterA.row - 1][index - 1])
-                }
-            } else {
-                val start = letterA.row
-                val end = letterB.row
-
-                val range = if (start < end) start..end else start downTo end
-
-                for (index in range) {
-                    result.append(letters[index - 1][letterA.row - 1])
-                }
-            }
         }
 
 
