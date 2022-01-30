@@ -15,11 +15,10 @@ import androidx.core.view.get
 import androidx.core.view.setPadding
 import timber.log.Timber
 import kotlin.math.floor
-import kotlin.math.max
 
 class WordBoard(
     context: Context, attr: AttributeSet? = null
-) : LinearLayout(context, attr), OnTouchEvent {
+) : LinearLayout(context, attr) {
 
     private var wordLineCount = 0
     private val boardLineSize get() = measuredHeight
@@ -28,13 +27,50 @@ class WordBoard(
 
     private var actualLine: Pair<PointF, PointF>? = null
 
-    private lateinit var paint : Paint
+    private lateinit var paint: Paint
 
     init {
         orientation = VERTICAL
         setPadding(0)
 
-        setOnTouchListener(this)
+        setupListeners()
+    }
+
+    private fun setupListeners() {
+        setOnTouchListener(
+            object : OnTouchEvent {
+                override fun down(event: MotionEvent) {
+                    val wordPoint = grid.getWordPoints(event.x, event.y)
+
+                    Timber.i(
+                        "down word\n" +
+                                "center point ${wordPoint.center.x} x ${wordPoint.center.y}"
+                    )
+
+                    actualLine = wordPoint.center.let { it to it }
+
+                    invalidate()
+                }
+
+                override fun up(event: MotionEvent) {
+                    actualLine = null
+
+                    invalidate()
+                }
+
+                override fun move(event: MotionEvent) {
+                    val wordPoint = grid.getWordPoints(event.x, event.y)
+
+                    Timber.i(
+                        "move word\n" +
+                                "center point ${wordPoint.center.x} x ${wordPoint.center.y}"
+                    )
+                    actualLine = actualLine?.copy(second = wordPoint.center)
+
+                    invalidate()
+                }
+            }
+        )
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -149,28 +185,6 @@ class WordBoard(
 
     private fun setText(h: Int, v: Int, word: String) {
         ((getChildAt(h) as ViewGroup)[v] as WordView).text = word
-    }
-
-    override fun down(event: MotionEvent) {
-        val wordPoints = grid.getWordPoints(event.x, event.y)
-
-        actualLine = wordPoints.center.let { it to it }
-
-        invalidate()
-    }
-
-    override fun up(event: MotionEvent) {
-        actualLine = null
-
-        invalidate()
-    }
-
-    override fun move(event: MotionEvent) {
-        val wordPoints = grid.getWordPoints(event.x, event.y)
-
-        actualLine = actualLine?.copy(second = wordPoints.center)
-
-        invalidate()
     }
 
     class WordGrid(
