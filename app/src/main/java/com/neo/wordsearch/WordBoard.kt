@@ -6,22 +6,20 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.MotionEvent
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.core.view.children
-import androidx.core.view.get
-import androidx.core.view.setPadding
+import android.widget.FrameLayout
 import timber.log.Timber
 import kotlin.math.floor
 
+
 class WordBoard(
     context: Context, attr: AttributeSet? = null
-) : LinearLayout(context, attr) {
+) : FrameLayout(context, attr) {
+
+    private lateinit var words: Array<Array<String>>
 
     private var wordLineCount = 0
-    private val boardLineSize get() = measuredHeight
+    private val boardLineSize get() = measuredWidth
 
     private lateinit var grid: WordGrid
 
@@ -30,9 +28,6 @@ class WordBoard(
     private lateinit var paint: Paint
 
     init {
-        orientation = VERTICAL
-        setPadding(0)
-
         setupListeners()
     }
 
@@ -40,7 +35,7 @@ class WordBoard(
         setOnTouchListener(
             object : OnTouchEvent {
                 override fun down(event: MotionEvent) {
-                    val wordPoint = grid.getWordPoints(event.x, event.y)
+                    val wordPoint = grid.getWordPoint(PointF(event.x, event.y))
 
                     Timber.i(
                         "down word\n" +
@@ -59,7 +54,7 @@ class WordBoard(
                 }
 
                 override fun move(event: MotionEvent) {
-                    val wordPoint = grid.getWordPoints(event.x, event.y)
+                    val wordPoint = grid.getWordPoint(PointF(event.x, event.y))
 
                     Timber.i(
                         "move word\n" +
@@ -106,21 +101,21 @@ class WordBoard(
                     "board size -> $boardLineSize X $boardLineSize"
         )
 
-        for (view in children) {
-            view.layoutParams.apply {
+        for ((column, rows) in words.withIndex()) {
+            for ((row, word) in rows.withIndex()) {
+                val wordPoint = grid.getWordPoint(row + 1, column + 1)
 
-                width = boardLineSize
-                height = grid.wordSize
-                setPadding(0)
+                val wordView: WordView = findViewWithTag("${column}x$row")
 
-                requestLayout()
-            }
-            for (word in (view as ViewGroup).children) {
-                val wordView = word as WordView
+                wordView.x = wordPoint.start.toFloat()
+                wordView.y = wordPoint.top.toFloat()
+
+                wordView.text = word
+
                 wordView.layoutParams.apply {
 
-                    width = grid.wordSize
-                    height = grid.wordSize
+                    width = grid.wordSize.toInt()
+                    height = grid.wordSize.toInt()
 
                     requestLayout()
                 }
@@ -131,6 +126,8 @@ class WordBoard(
             color = Color.RED
             strokeWidth = grid.wordSize * 0.75f
             strokeCap = Paint.Cap.ROUND
+
+            textSize = grid.wordSize * 0.75f
         }
     }
 
@@ -149,23 +146,23 @@ class WordBoard(
 
         removeAllViews()
 
-        for (i in 0 until wordLineCount) {
-            val container = LinearLayout(context).apply {
-
-                orientation = HORIZONTAL
-                gravity = Gravity.START
-
-                for (j in 0 until wordLineCount) {
-                    addView(WordView(context), j)
-                }
+        for ((column, rows) in words.withIndex()) {
+            for ((row, word) in rows.withIndex()) {
+                addView(
+                    WordView(context).apply {
+                        tag = "${column}x$row"
+                        text = word
+                    }, row
+                )
             }
-            addView(container, i)
         }
 
         adjustWordsSize()
     }
 
     fun renderPuzzle(words: Array<Array<String>>) {
+
+        this.words = words
 
         Timber.i("create puzzle $words x $words")
 
@@ -174,17 +171,20 @@ class WordBoard(
 
         if (words.size != wordLineCount) {
             createPuzzle(words.size)
-        }
+        } else {
 
-        words.forEachIndexed { h, it ->
-            it.forEachIndexed { v, word ->
-                setText(h, v, word)
+            for ((column, rows) in words.withIndex()) {
+                for ((row, word) in rows.withIndex()) {
+                    setText(column, row, word)
+                }
             }
+
         }
     }
 
-    private fun setText(h: Int, v: Int, word: String) {
-        ((getChildAt(h) as ViewGroup)[v] as WordView).text = word
+    private fun setText(column: Int, row: Int, word: String) {
+        val wordView: WordView = findViewWithTag("${column}x$row")
+        wordView.text = word
     }
 
     class WordGrid(
@@ -193,20 +193,22 @@ class WordBoard(
     ) {
         val wordCount = wordLineCount * wordLineCount
         val boardLineSize get() = getBoardLineSize()
-        val wordSize get() = boardLineSize / wordLineCount
+        val wordSize : Float get() = boardLineSize.toFloat() / wordLineCount
 
-        fun getWordPoints(x: Float, y: Float): WordPoint {
-            val row = floor(y / wordSize).toInt() + 1
-            val column = floor(x / wordSize).toInt() + 1
+        fun getWordPoint(point: PointF): WordPoint {
+            val row = floor(point.y / wordSize).toInt() + 1
+            val column = floor(point.x / wordSize).toInt() + 1
 
             Timber.i("word $column x $row")
 
-            return WordPoint(row, column)
+            return getWordPoint(column, row)
         }
 
+        fun getWordPoint(column: Int, row: Int) = WordPoint(column, row)
+
         inner class WordPoint(
-            val row: Int,
-            val column: Int
+            val column: Int,
+            val row: Int
         ) {
             val end = (wordSize * column)
             val bottom = (wordSize * row)
