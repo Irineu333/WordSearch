@@ -7,7 +7,7 @@ import android.view.Gravity
 import androidx.appcompat.widget.AppCompatTextView
 import timber.log.Timber
 
-class WordView(
+class LetterView(
     context: Context,
     attr: AttributeSet? = null
 ) : AppCompatTextView(context, attr) {
