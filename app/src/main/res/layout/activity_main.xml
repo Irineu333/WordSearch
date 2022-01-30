@@ -43,6 +43,16 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tv_actual_word"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/game_view"
+        app:layout_constraintEnd_toEndOf="@+id/game_view"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="ABC" />
+
     <com.neo.wordsearch.LetterBoard
         android:background="@drawable/background_game_view"
         android:id="@+id/game_view"

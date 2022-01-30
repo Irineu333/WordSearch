@@ -26,6 +26,8 @@ class LetterBoard(
     private var actualLine: Pair<PointF, PointF>? = null
 
     private lateinit var paint: Paint
+    
+    var actualWordListener : ((String) -> Unit)? = null
 
     init {
         setupListeners()
@@ -37,10 +39,12 @@ class LetterBoard(
                 override fun down(event: MotionEvent) {
                     letterGrid.getLetterPoint(PointF(event.x, event.y))?.run {
 
+                        val letter = letters[row - 1][column - 1]
+                        
                         Timber.i(
                             "down letter\n" +
                                     "center point -> ${center.x} x ${center.y}\n" +
-                                    "letter ${letters[row - 1][column - 1]}"
+                                    "letter $letter"
                         )
 
                         actualLine = center.let { it to it }
@@ -55,6 +59,7 @@ class LetterBoard(
                             strokeCap = Paint.Cap.ROUND
                         }
 
+                        actualWordListener?.invoke(letter)
                         invalidate()
                     }
                 }
@@ -150,8 +155,14 @@ class LetterBoard(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        actualLine?.let {
-            canvas.drawLine(it)
+        actualLine?.let { line ->
+            canvas.drawLine(line)
+
+            getWord(line)?.let {
+                actualWordListener?.invoke(it)
+            }
+        } ?: run {
+            actualWordListener?.invoke("")
         }
     }
 

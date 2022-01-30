@@ -31,6 +31,10 @@ class GameActivity : AppCompatActivity() {
             )
         )
 
+        binding.gameView.actualWordListener = { word ->
+            binding.tvActualWord.text = word
+        }
+
         binding.n5x5.setOnClickListener {
             binding.gameView.renderPuzzle(randomPuzzle(5, 5))
         }
