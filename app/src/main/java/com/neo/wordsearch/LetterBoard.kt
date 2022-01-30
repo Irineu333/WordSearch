@@ -33,6 +33,31 @@ class LetterBoard(
         setupListeners()
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+
+        Timber.i(
+            "onMeasure\n" +
+                    "view size -> $measuredWidth\n"
+        )
+
+        adjustWordsSize()
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+
+        actualLine?.let { line ->
+            canvas.drawLine(line)
+
+            getWord(line)?.let {
+                actualWordListener?.invoke(it)
+            }
+        } ?: run {
+            actualWordListener?.invoke("")
+        }
+    }
+
     private fun setupListeners() {
         setOnTouchListener(
             object : OnTouchEvent {
@@ -143,31 +168,6 @@ class LetterBoard(
         return result.toString()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
-
-        Timber.i(
-            "onMeasure\n" +
-                    "view size -> $measuredWidth\n"
-        )
-
-        adjustWordsSize()
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-
-        actualLine?.let { line ->
-            canvas.drawLine(line)
-
-            getWord(line)?.let {
-                actualWordListener?.invoke(it)
-            }
-        } ?: run {
-            actualWordListener?.invoke("")
-        }
-    }
-
     private fun Canvas.drawLine(
         line: Pair<PointF, PointF>
     ) = with(line) {
@@ -267,44 +267,5 @@ class LetterBoard(
     private fun setText(column: Int, row: Int, word: String) {
         val letterView: LetterView = findViewWithTag("${column}x$row")
         letterView.text = word
-    }
-
-    class LetterGrid(
-        val letterOfLine: Int,
-        private val getBoardLineSize: () -> Int
-    ) {
-        val lettersCount = letterOfLine * letterOfLine
-        val boardLineSize get() = getBoardLineSize()
-        val letterSize: Float get() = boardLineSize.toFloat() / letterOfLine
-
-        fun getLetterPoint(point: PointF): LetterPoint? {
-            val row = floor(point.y / letterSize).toInt() + 1
-            val column = floor(point.x / letterSize).toInt() + 1
-
-            Timber.i("word $column x $row")
-
-            return getLetterPoint(column, row)
-        }
-
-        fun getLetterPoint(column: Int, row: Int): LetterPoint? {
-            if (column < 1 || row < 1) return null
-            if (column > letterOfLine || row > letterOfLine) return null
-            return LetterPoint(column, row)
-        }
-
-        inner class LetterPoint(
-            val column: Int,
-            val row: Int
-        ) {
-            val end = (letterSize * column)
-            val bottom = (letterSize * row)
-            val top = bottom - letterSize
-            val start = end - letterSize
-
-            val center = PointF(
-                end - letterSize / 2f,
-                bottom - letterSize / 2f
-            )
-        }
     }
 }
