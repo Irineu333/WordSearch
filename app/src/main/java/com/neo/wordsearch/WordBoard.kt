@@ -11,7 +11,6 @@ import android.widget.FrameLayout
 import timber.log.Timber
 import kotlin.math.floor
 
-
 class WordBoard(
     context: Context, attr: AttributeSet? = null
 ) : FrameLayout(context, attr) {
@@ -36,6 +35,7 @@ class WordBoard(
             object : OnTouchEvent {
                 override fun down(event: MotionEvent) {
                     grid.getWordPoint(PointF(event.x, event.y))?.run {
+
                         Timber.i(
                             "down word\n" +
                                     "center point -> ${center.x} x ${center.y}"
@@ -44,7 +44,7 @@ class WordBoard(
                         actualLine = center.let { it to it }
 
                         val wordView: WordView =
-                            findViewWithTag("${column}x${row}")
+                            findViewWithTag("${column - 1}x${row - 1}")
 
                         paint = Paint().apply {
                             color = Color.RED
@@ -65,10 +65,12 @@ class WordBoard(
 
                 override fun move(event: MotionEvent) {
                     grid.getWordPoint(PointF(event.x, event.y))?.run {
+
                         Timber.i(
                             "move word\n" +
                                     "center point -> ${center.x} x ${center.y}"
                         )
+
                         actualLine = actualLine?.copy(second = center)
 
                         invalidate()
@@ -109,7 +111,8 @@ class WordBoard(
         if (wordLineCount == 0) return
 
         Timber.i(
-            "adjust size\nword size -> ${grid.wordSize}\n" +
+            "adjust size\n" +
+                    "word size -> ${grid.wordSize}\n" +
                     "board size -> $boardLineSize X $boardLineSize"
         )
 
