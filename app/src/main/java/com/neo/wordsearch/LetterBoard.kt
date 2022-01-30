@@ -27,7 +27,7 @@ class LetterBoard(
 
     private lateinit var linePaint: Paint
 
-    var actualWordListener : ((String) -> Unit)? = null
+    var actualWordListener: ((String) -> Unit)? = null
 
     init {
         setupListeners()
@@ -89,8 +89,6 @@ class LetterBoard(
 
                         invalidate()
                     }
-
-
                 }
             }
         )
@@ -148,8 +146,10 @@ class LetterBoard(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
 
-        Timber.i("onMeasure\n" +
-                "view size -> $measuredWidth\n")
+        Timber.i(
+            "onMeasure\n" +
+                    "view size -> $measuredWidth\n"
+        )
 
         adjustWordsSize()
     }

@@ -7,10 +7,10 @@
     tools:context=".GameActivity">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/game_view"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_actual_word"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -45,22 +45,33 @@
 
     <TextView
         android:id="@+id/tv_actual_word"
-        android:textSize="16sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/game_view"
-        app:layout_constraintEnd_toEndOf="@+id/game_view"
+        android:layout_margin="8dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="ABC" />
 
-    <com.neo.wordsearch.LetterBoard
-        android:background="#EEEEEE"
-        android:id="@+id/game_view"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        app:cardBackgroundColor="#EEEEEE"
+        app:cardCornerRadius="2dp"
+        app:contentPadding="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.neo.wordsearch.LetterBoard
+            android:id="@+id/latter_board"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#EEEEEE" />
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,7 +22,7 @@ class GameActivity : AppCompatActivity() {
     private fun init() {
         Timber.i("init")
 
-        binding.gameView.renderPuzzle(
+        binding.latterBoard.renderPuzzle(
             arrayOf(
                 arrayOf("A", "B", "C", "D"),
                 arrayOf("E", "F", "G", "H"),
@@ -31,23 +31,23 @@ class GameActivity : AppCompatActivity() {
             )
         )
 
-        binding.gameView.actualWordListener = { word ->
+        binding.latterBoard.actualWordListener = { word ->
             binding.tvActualWord.text = word
         }
 
         binding.n5x5.setOnClickListener {
-            binding.gameView.renderPuzzle(randomPuzzle(5, 5))
+            binding.latterBoard.renderPuzzle(randomPuzzle(5, 5))
         }
 
         binding.n10x10.setOnClickListener {
-            binding.gameView.renderPuzzle(randomPuzzle(10, 10))
+            binding.latterBoard.renderPuzzle(randomPuzzle(10, 10))
         }
 
         binding.n15x15.setOnClickListener {
-            binding.gameView.renderPuzzle(randomPuzzle(15, 15))
+            binding.latterBoard.renderPuzzle(randomPuzzle(15, 15))
         }
         binding.n20x20.setOnClickListener {
-            binding.gameView.renderPuzzle(randomPuzzle(20, 20))
+            binding.latterBoard.renderPuzzle(randomPuzzle(20, 20))
         }
     }
 
