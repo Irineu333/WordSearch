@@ -22,7 +22,14 @@ class GameActivity : AppCompatActivity() {
     private fun init() {
         Timber.i("init")
 
-        binding.gameView.renderPuzzle(randomPuzzle(5, 5))
+        binding.gameView.renderPuzzle(
+            arrayOf(
+                arrayOf("A", "B", "C", "D"),
+                arrayOf("E", "F", "G", "H"),
+                arrayOf("I", "J", "K", "L"),
+                arrayOf("M", "N", "O", "P"),
+            )
+        )
 
         binding.n5x5.setOnClickListener {
             binding.gameView.renderPuzzle(randomPuzzle(5, 5))

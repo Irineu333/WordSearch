@@ -40,7 +40,7 @@ class LetterBoard(
                         Timber.i(
                             "down letter\n" +
                                     "center point -> ${center.x} x ${center.y}\n" +
-                                    "letter ${letters[column - 1][row - 1]}"
+                                    "letter ${letters[row - 1][column - 1]}"
                         )
 
                         actualLine = center.let { it to it }
@@ -98,18 +98,68 @@ class LetterBoard(
 
         if (letterA == null || letterB == null) return null
 
-        val columnDiff = letterA.column - letterB.column
-        val rowDiff = letterA.row - letterB.row
+        var columnDiff = letterA.column - letterB.column
+        var rowDiff = letterA.row - letterB.row
 
-        Timber.i("getWord\n" +
-                "columnDiff -> $columnDiff\n" +
-                "rowDiff -> $rowDiff")
+        val result = StringBuilder()
 
         if (columnDiff != 0 && rowDiff != 0) {
+
             if (abs(columnDiff) != abs(rowDiff)) return null
+
+            var row = letterA.row
+            var column = letterA.column
+
+            result.append(letters[row - 1][column - 1])
+
+            while (columnDiff != 0 || rowDiff != 0) {
+                if (columnDiff != 0) {
+                    if (columnDiff > 0) {
+                        columnDiff--
+                        column--
+                    } else {
+                        columnDiff++
+                        column++
+                    }
+                }
+                if (rowDiff != 0) {
+                    if (rowDiff > 0) {
+                        rowDiff--
+                        row--
+                    } else {
+                        rowDiff++
+                        row++
+                    }
+                }
+
+                result.append(letters[row - 1][column - 1])
+            }
+
+        } else {
+
+            if (columnDiff != 0) {
+                val start = letterA.column
+                val end = letterB.column
+
+                val range = if (start < end) start..end else start downTo end
+
+                for (index in range) {
+                    result.append(letters[letterA.row - 1][index - 1])
+                }
+            } else {
+                val start = letterA.row
+                val end = letterB.row
+
+                val range = if (start < end) start..end else start downTo end
+
+                for (index in range) {
+                    result.append(letters[index - 1][letterA.row - 1])
+                }
+            }
         }
 
-        return "correct"
+
+        return result.toString()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
