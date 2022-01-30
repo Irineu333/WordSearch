@@ -22,31 +22,23 @@ class WordBoard(
 ) : LinearLayout(context, attr), OnTouchEvent {
 
     private var wordLineCount = 0
-    private var boardLineSize = 0
+    private val boardLineSize get() = measuredHeight
 
     private lateinit var grid: WordGrid
 
-    private val wordSize get() = boardLineSize / wordLineCount
-
     private var actualLine: Pair<PointF, PointF>? = null
 
-    private val paint = Paint().apply {
-        color = Color.RED
-        strokeWidth = context.dp(28f).px
-        strokeCap = Paint.Cap.ROUND
-    }
+    private lateinit var paint : Paint
 
     init {
         orientation = VERTICAL
-        setPadding(context.dp(2).px)
+        setPadding(0)
 
         setOnTouchListener(this)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
-
-        boardLineSize = max(measuredWidth, measuredHeight)
 
         adjustWordsSize()
     }
@@ -69,19 +61,21 @@ class WordBoard(
         )
     }
 
-
     private fun adjustWordsSize() {
 
         if (wordLineCount == 0) return
 
-        Timber.i("words size -> $wordSize")
-        Timber.i("board size -> $boardLineSize")
+        Timber.i(
+            "adjust size\nword size -> ${grid.wordSize}\n" +
+                    "board size -> $boardLineSize X $boardLineSize"
+        )
 
         for (view in children) {
             view.layoutParams.apply {
 
                 width = boardLineSize
-                height = wordSize
+                height = grid.wordSize
+                setPadding(0)
 
                 requestLayout()
             }
@@ -89,28 +83,32 @@ class WordBoard(
                 val wordView = word as WordView
                 wordView.layoutParams.apply {
 
-                    width = wordSize
-                    height = wordSize
+                    width = grid.wordSize
+                    height = grid.wordSize
 
                     requestLayout()
                 }
             }
         }
+
+        paint = Paint().apply {
+            color = Color.RED
+            strokeWidth = grid.wordSize * 0.75f
+            strokeCap = Paint.Cap.ROUND
+        }
     }
 
     private fun createPuzzle(wordLineCount: Int) {
+
+        Timber.i("create puzzle $wordLineCount x $wordLineCount")
 
         if (wordLineCount <= 0) throw IllegalArgumentException("length not be 0 or negative")
 
         this.wordLineCount = wordLineCount
 
-        Timber.i("create puzzle $wordLineCount x $wordLineCount")
-
         grid = WordGrid(
             wordLineCount = wordLineCount,
-            getBoardLineSize = { boardLineSize },
-            getWordSize = { wordSize },
-            getPadding = { paddingTop or paddingStart }
+            getBoardLineSize = { boardLineSize }
         )
 
         removeAllViews()
@@ -119,12 +117,11 @@ class WordBoard(
             val container = LinearLayout(context).apply {
 
                 orientation = HORIZONTAL
-                gravity = Gravity.CENTER
+                gravity = Gravity.START
 
                 for (j in 0 until wordLineCount) {
                     addView(WordView(context), j)
                 }
-
             }
             addView(container, i)
         }
@@ -133,6 +130,8 @@ class WordBoard(
     }
 
     fun renderPuzzle(words: Array<Array<String>>) {
+
+        Timber.i("create puzzle $words x $words")
 
         if (words.any { it.size != words.size })
             throw IllegalArgumentException("horizontal and vertical length must be equals")
@@ -154,8 +153,8 @@ class WordBoard(
 
     override fun down(event: MotionEvent) {
         val wordPoints = grid.getWordPoints(event.x, event.y)
-        val singlePoint = wordPoints.center
-        actualLine = singlePoint to singlePoint
+
+        actualLine = wordPoints.center.let { it to it }
 
         invalidate()
     }
@@ -168,6 +167,7 @@ class WordBoard(
 
     override fun move(event: MotionEvent) {
         val wordPoints = grid.getWordPoints(event.x, event.y)
+
         actualLine = actualLine?.copy(second = wordPoints.center)
 
         invalidate()
@@ -175,31 +175,34 @@ class WordBoard(
 
     class WordGrid(
         val wordLineCount: Int,
-        private val getBoardLineSize: () -> Int,
-        private val getWordSize: () -> Int,
-        private val getPadding: () -> Int
+        private val getBoardLineSize: () -> Int
     ) {
         val wordCount = wordLineCount * wordLineCount
-        val wordSize get() = getWordSize()
         val boardLineSize get() = getBoardLineSize()
+        val wordSize get() = boardLineSize / wordLineCount
 
-        fun getWordPoints(x: Float, y: Float): WordPoints {
+        fun getWordPoints(x: Float, y: Float): WordPoint {
             val row = floor(y / wordSize).toInt() + 1
             val column = floor(x / wordSize).toInt() + 1
 
             Timber.i("word $column x $row")
-            return WordPoints(row, column)
+
+            return WordPoint(row, column)
         }
 
-        inner class WordPoints(
+        inner class WordPoint(
             val row: Int,
             val column: Int
         ) {
-            val end = wordSize * column + getPadding()
-            val bottom = wordSize * row + getPadding()
+            val end = (wordSize * column)
+            val bottom = (wordSize * row)
             val top = bottom - wordSize
             val start = end - wordSize
-            val center = PointF(end - wordSize / 2f, bottom - wordSize / 2f)
+
+            val center = PointF(
+                end - wordSize / 2f,
+                bottom - wordSize / 2f
+            )
         }
     }
 }
