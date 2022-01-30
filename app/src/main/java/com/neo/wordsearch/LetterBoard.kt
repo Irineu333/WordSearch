@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import timber.log.Timber
+import kotlin.math.abs
 import kotlin.math.floor
 
 class LetterBoard(
@@ -67,13 +68,20 @@ class LetterBoard(
                 override fun move(event: MotionEvent) {
                     letterGrid.getLetterPoint(PointF(event.x, event.y))?.run {
 
+
+                        val newLine = actualLine?.copy(second = center)
+
+                        val word = newLine?.let { getWord(it) }
+
+                        if (word != null) {
+                            actualLine = newLine
+                        }
+
                         Timber.i(
                             "move letter\n" +
                                     "center point -> ${center.x} x ${center.y}\n" +
-                                    "letter ${letters[column - 1][row - 1]}"
+                                    "word -> $word"
                         )
-
-                        actualLine = actualLine?.copy(second = center)
 
                         invalidate()
                     }
@@ -82,6 +90,26 @@ class LetterBoard(
                 }
             }
         )
+    }
+
+    private fun getWord(actualLine: Pair<PointF, PointF>): String? {
+        val letterA = letterGrid.getLetterPoint(actualLine.first)
+        val letterB = letterGrid.getLetterPoint(actualLine.second)
+
+        if (letterA == null || letterB == null) return null
+
+        val columnDiff = letterA.column - letterB.column
+        val rowDiff = letterA.row - letterB.row
+
+        Timber.i("getWord\n" +
+                "columnDiff -> $columnDiff\n" +
+                "rowDiff -> $rowDiff")
+
+        if (columnDiff != 0 && rowDiff != 0) {
+            if (abs(columnDiff) != abs(rowDiff)) return null
+        }
+
+        return "correct"
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
