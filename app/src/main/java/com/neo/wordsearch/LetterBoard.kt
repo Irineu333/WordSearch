@@ -25,8 +25,8 @@ class LetterBoard(
 
     private var actualLine: Pair<PointF, PointF>? = null
 
-    private lateinit var paint: Paint
-    
+    private lateinit var linePaint: Paint
+
     var actualWordListener : ((String) -> Unit)? = null
 
     init {
@@ -40,7 +40,7 @@ class LetterBoard(
                     letterGrid.getLetterPoint(PointF(event.x, event.y))?.run {
 
                         val letter = letters[row - 1][column - 1]
-                        
+
                         Timber.i(
                             "down letter\n" +
                                     "center point -> ${center.x} x ${center.y}\n" +
@@ -52,7 +52,7 @@ class LetterBoard(
                         val letterView: LetterView =
                             findViewWithTag("${column - 1}x${row - 1}")
 
-                        paint = Paint().apply {
+                        linePaint = Paint().apply {
                             color = Color.RED
 
                             strokeWidth = letterView.textSize
@@ -72,7 +72,6 @@ class LetterBoard(
 
                 override fun move(event: MotionEvent) {
                     letterGrid.getLetterPoint(PointF(event.x, event.y))?.run {
-
 
                         val newLine = actualLine?.copy(second = center)
 
@@ -149,6 +148,9 @@ class LetterBoard(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
 
+        Timber.i("onMeasure\n" +
+                "view size -> $measuredWidth\n")
+
         adjustWordsSize()
     }
 
@@ -172,7 +174,7 @@ class LetterBoard(
         drawLine(
             first.x, first.y,
             second.x, second.y,
-            paint
+            linePaint
         )
     }
 

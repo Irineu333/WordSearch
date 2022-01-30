@@ -54,7 +54,7 @@
         tools:text="ABC" />
 
     <com.neo.wordsearch.LetterBoard
-        android:background="@drawable/background_game_view"
+        android:background="#EEEEEE"
         android:id="@+id/game_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"

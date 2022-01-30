@@ -25,8 +25,9 @@ class LetterView(
 
         textSize = measuredWidth * textPercentSize
 
-        Timber.i("view size $measuredWidth")
-        Timber.i("text size $textSize")
+        Timber.i("onMeasure\n" +
+                "view size -> $measuredWidth\n" +
+                "text size -> $textSize")
     }
 
     override fun setTextSize(size: Float) {
