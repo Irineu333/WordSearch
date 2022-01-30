@@ -35,16 +35,26 @@ class WordBoard(
         setOnTouchListener(
             object : OnTouchEvent {
                 override fun down(event: MotionEvent) {
-                    val wordPoint = grid.getWordPoint(PointF(event.x, event.y))
+                    grid.getWordPoint(PointF(event.x, event.y))?.run {
+                        Timber.i(
+                            "down word\n" +
+                                    "center point -> ${center.x} x ${center.y}"
+                        )
 
-                    Timber.i(
-                        "down word\n" +
-                                "center point ${wordPoint.center.x} x ${wordPoint.center.y}"
-                    )
+                        actualLine = center.let { it to it }
 
-                    actualLine = wordPoint.center.let { it to it }
+                        val wordView: WordView =
+                            findViewWithTag("${column}x${row}")
 
-                    invalidate()
+                        paint = Paint().apply {
+                            color = Color.RED
+
+                            strokeWidth = wordView.textSize
+                            strokeCap = Paint.Cap.ROUND
+                        }
+
+                        invalidate()
+                    }
                 }
 
                 override fun up(event: MotionEvent) {
@@ -54,15 +64,17 @@ class WordBoard(
                 }
 
                 override fun move(event: MotionEvent) {
-                    val wordPoint = grid.getWordPoint(PointF(event.x, event.y))
+                    grid.getWordPoint(PointF(event.x, event.y))?.run {
+                        Timber.i(
+                            "move word\n" +
+                                    "center point -> ${center.x} x ${center.y}"
+                        )
+                        actualLine = actualLine?.copy(second = center)
 
-                    Timber.i(
-                        "move word\n" +
-                                "center point ${wordPoint.center.x} x ${wordPoint.center.y}"
-                    )
-                    actualLine = actualLine?.copy(second = wordPoint.center)
+                        invalidate()
+                    }
 
-                    invalidate()
+
                 }
             }
         )
@@ -103,12 +115,15 @@ class WordBoard(
 
         for ((column, rows) in words.withIndex()) {
             for ((row, word) in rows.withIndex()) {
-                val wordPoint = grid.getWordPoint(row + 1, column + 1)
+
+                val wordPoint = grid
+                    .getWordPoint(row + 1, column + 1)
+                    ?: throw IllegalStateException("word view not found -> $column x $row")
 
                 val wordView: WordView = findViewWithTag("${column}x$row")
 
-                wordView.x = wordPoint.start.toFloat()
-                wordView.y = wordPoint.top.toFloat()
+                wordView.x = wordPoint.start
+                wordView.y = wordPoint.top
 
                 wordView.text = word
 
@@ -120,14 +135,6 @@ class WordBoard(
                     requestLayout()
                 }
             }
-        }
-
-        paint = Paint().apply {
-            color = Color.RED
-            strokeWidth = grid.wordSize * 0.75f
-            strokeCap = Paint.Cap.ROUND
-
-            textSize = grid.wordSize * 0.75f
         }
     }
 
@@ -193,9 +200,9 @@ class WordBoard(
     ) {
         val wordCount = wordLineCount * wordLineCount
         val boardLineSize get() = getBoardLineSize()
-        val wordSize : Float get() = boardLineSize.toFloat() / wordLineCount
+        val wordSize: Float get() = boardLineSize.toFloat() / wordLineCount
 
-        fun getWordPoint(point: PointF): WordPoint {
+        fun getWordPoint(point: PointF): WordPoint? {
             val row = floor(point.y / wordSize).toInt() + 1
             val column = floor(point.x / wordSize).toInt() + 1
 
@@ -204,7 +211,11 @@ class WordBoard(
             return getWordPoint(column, row)
         }
 
-        fun getWordPoint(column: Int, row: Int) = WordPoint(column, row)
+        fun getWordPoint(column: Int, row: Int): WordPoint? {
+            if (column < 1 || row < 1) return null
+            if (column > wordLineCount || row > wordLineCount) return null
+            return WordPoint(column, row)
+        }
 
         inner class WordPoint(
             val column: Int,
