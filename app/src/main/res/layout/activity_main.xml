@@ -6,56 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".GameActivity">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_actual_word"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
-            android:id="@+id/n5x5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5x5" />
-
-
-        <Button
-            android:id="@+id/n10x10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10x10" />
-
-        <Button
-            android:id="@+id/n15x15"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="15x15" />
-
-        <Button
-            android:id="@+id/n20x20"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="20x20" />
-
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_actual_word"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/cardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="ABC" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_words"
+        android:layout_marginVertical="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/cv_latter_board"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+        android:id="@+id/cv_latter_board"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
