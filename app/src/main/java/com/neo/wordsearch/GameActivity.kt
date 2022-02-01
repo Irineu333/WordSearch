@@ -42,26 +42,29 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         words = arrayOf(
             WordModel("IRINEU"),
             WordModel("TEFY"),
-            WordModel("GABRIEL")
+            WordModel("GABRIEL"),
+            WordModel("JOAO"),
+            WordModel("TATI"),
+            WordModel("ANE"),
         )
 
         wordsAdapter.updateAll()
     }
 
     private fun setupLetterBoard() {
-        binding.latterBoard.renderPuzzle(
+        binding.containerLetterBoard.latterBoard.renderPuzzle(
             arrayOf(
                 arrayOf("I", "R", "I", "N", "E", "U", "O"),
-                arrayOf("E", "E", "G", "H", "A", "M", "O"),
-                arrayOf("I", "J", "S", "T", "A", "F", "Y"),
-                arrayOf("M", "N", "O", "P", "K", "T", "A"),
+                arrayOf("E", "S", "G", "T", "L", "M", "O"),
+                arrayOf("I", "J", "E", "N", "A", "F", "Y"),
+                arrayOf("M", "O", "O", "P", "K", "T", "A"),
                 arrayOf("G", "A", "B", "R", "I", "E", "L"),
-                arrayOf("M", "N", "O", "P", "K", "F", "K"),
+                arrayOf("M", "O", "O", "P", "K", "F", "K"),
                 arrayOf("E", "S", "T", "E", "K", "Y", "K"),
             )
         )
 
-        binding.latterBoard.onSelectListener = this
+        binding.containerLetterBoard.latterBoard.onSelectListener = this
     }
 
     override fun selectWord(word: String, color: Int): Boolean {
@@ -69,7 +72,7 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         binding.tvNewWord.setTextColor(color)
 
         for ((i, it) in words.withIndex()) {
-            if (it.text == word) {
+            if (!it.selected && it.text == word) {
                 words[i] = it.copy(color = color, selected = true)
                 wordsAdapter.updateAll()
                 return true

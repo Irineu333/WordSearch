@@ -2,12 +2,12 @@ package com.neo.wordsearch
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
+import androidx.annotation.ColorInt
 import java.util.*
 import kotlin.math.abs
 
@@ -22,7 +22,7 @@ class LetterBoard(
     private var letterOfLine = 0
     private val boardWidth get() = measuredWidth
     private var actualLine: Pair<PointF, PointF>? = null
-    private val lines : Stack<Pair<PointF, PointF>> = Stack()
+    private val lines: Stack<Line> = Stack()
 
     var onSelectListener: OnSelectListener? = null
 
@@ -61,12 +61,7 @@ class LetterBoard(
                         val letterView: LetterView =
                             findViewWithTag("${column - 1}x${row - 1}")
 
-                        linePaint = Paint().apply {
-                            color = Color.RED
-
-                            strokeWidth = letterView.textSize
-                            strokeCap = Paint.Cap.ROUND
-                        }
+                        linePaint = getPaint(letterView.textSize)
 
                         onSelectListener?.selectWord(letter, linePaint.color)
 
@@ -92,9 +87,18 @@ class LetterBoard(
                         if (word != null) {
                             actualLine = newLine
 
-                            if(onSelectListener?.selectWord(word, linePaint.color) == true) {
-                                lines.add(newLine)
+                            if (onSelectListener?.selectWord(word, linePaint.color) == true) {
+
+                                lines.add(
+                                    Line(
+                                        start = newLine.first,
+                                        end = newLine.second,
+                                        paint = linePaint
+                                    )
+                                )
+
                                 actualLine = null
+                                onSelectListener?.selectWord("", linePaint.color)
                             }
                         }
 
@@ -102,6 +106,41 @@ class LetterBoard(
                     }
                 }
             }
+        )
+    }
+
+    private fun getPaint(strokeWidth: Float): Paint {
+        return Paint(Paint.ANTI_ALIAS_FLAG).apply {
+
+            color = getPaintColor(lines.size)
+
+            this.strokeWidth = strokeWidth
+            strokeCap = Paint.Cap.ROUND
+        }
+    }
+
+    @ColorInt
+    private fun getPaintColor(size: Int): Int {
+        return hsvToColor(getHSV(size * 10 + 10))
+    }
+
+    private fun Canvas.drawLine(
+        line: Pair<PointF, PointF>
+    ) = with(line) {
+        drawLine(
+            first.x, first.y,
+            second.x, second.y,
+            linePaint
+        )
+    }
+
+    private fun Canvas.drawLine(
+        line: Line
+    ) = with(line) {
+        drawLine(
+            start.x, start.y,
+            end.x, end.y,
+            paint
         )
     }
 
@@ -152,16 +191,6 @@ class LetterBoard(
 
 
         return result.toString()
-    }
-
-    private fun Canvas.drawLine(
-        line: Pair<PointF, PointF>
-    ) = with(line) {
-        drawLine(
-            first.x, first.y,
-            second.x, second.y,
-            linePaint
-        )
     }
 
     private fun adjustWordsSize() {

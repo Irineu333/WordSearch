@@ -1,22 +1,19 @@
 package com.neo.wordsearch
 
 import android.graphics.PointF
-import timber.log.Timber
 import kotlin.math.floor
 
 class LetterGrid(
     val letterOfLine: Int,
     private val getBoardLineSize: () -> Int
 ) {
-    val lettersCount = letterOfLine * letterOfLine
-    val boardLineSize get() = getBoardLineSize()
-    val letterSize: Float get() = boardLineSize.toFloat() / letterOfLine
+    val lettersCount: Int = letterOfLine * letterOfLine
+    val boardLineSize: Float get() = getBoardLineSize().toFloat()
+    val letterSize: Float get() = boardLineSize / letterOfLine.toFloat()
 
     fun getLetterPoint(point: PointF): LetterPoint? {
-        val row = floor(point.y / letterSize).toInt() + 1
-        val column = floor(point.x / letterSize).toInt() + 1
-
-        Timber.i("word $column x $row")
+        val row = floor(point.y / letterSize + 1).toInt()
+        val column = floor(point.x / letterSize + 1).toInt()
 
         return getLetterPoint(column, row)
     }
@@ -31,14 +28,14 @@ class LetterGrid(
         val column: Int,
         val row: Int
     ) {
-        val end = (letterSize * column)
-        val bottom = (letterSize * row)
-        val top = bottom - letterSize
-        val start = end - letterSize
+        val end: Float = letterSize * column
+        val bottom: Float = letterSize * row
+        val top: Float = bottom - letterSize
+        val start: Float = end - letterSize
 
         val center = PointF(
-            end - letterSize / 2f,
-            bottom - letterSize / 2f
+            end - letterSize / 2,
+            bottom - letterSize / 2
         )
     }
 }

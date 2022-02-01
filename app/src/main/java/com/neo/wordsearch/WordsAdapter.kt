@@ -49,7 +49,11 @@ class WordsHolder(
 
         if (word.selected) {
             binding.tvWord.text = SpannableString(word.text).apply {
-                setSpan(StrikethroughSpan(), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(
+                    StrikethroughSpan(),
+                    0, length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
             }
         } else {
             binding.tvWord.text = word.text

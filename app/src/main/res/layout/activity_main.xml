@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,48 +12,36 @@
         android:id="@+id/rv_words"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="6dp"
         android:layout_marginBottom="4dp"
-        app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/fl_head"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"/>
 
     <FrameLayout
-        android:padding="4dp"
-        android:layout_marginBottom="4dp"
         android:id="@+id/fl_head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/cv_latter_board">
+        android:padding="4dp">
 
         <TextView
-            android:textSize="16sp"
             android:id="@+id/tv_new_word"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textSize="16sp"
             tools:text="text here" />
 
     </FrameLayout>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv_latter_board"
+    <include
+        android:id="@+id/container_letter_board"
+        layout="@layout/content_letter_board"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardBackgroundColor="#EEEEEE"
-        app:cardCornerRadius="2dp"
-        app:contentPadding="2dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <com.neo.wordsearch.LetterBoard
-            android:id="@+id/latter_board"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="#EEEEEE" />
-
-    </androidx.cardview.widget.CardView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
