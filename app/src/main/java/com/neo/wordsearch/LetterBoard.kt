@@ -8,26 +8,23 @@ import android.graphics.PointF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
-import timber.log.Timber
+import java.util.*
 import kotlin.math.abs
-import kotlin.math.floor
 
 class LetterBoard(
     context: Context, attr: AttributeSet? = null
 ) : FrameLayout(context, attr) {
 
     private lateinit var letters: Array<Array<String>>
+    private lateinit var linePaint: Paint
+    private lateinit var letterGrid: LetterGrid
 
     private var letterOfLine = 0
     private val boardWidth get() = measuredWidth
-
-    private lateinit var letterGrid: LetterGrid
-
     private var actualLine: Pair<PointF, PointF>? = null
+    private val lines : Stack<Pair<PointF, PointF>> = Stack()
 
-    private lateinit var linePaint: Paint
-
-    var actualWordListener: ((String) -> Unit)? = null
+    var onSelectListener: OnSelectListener? = null
 
     init {
         setupListeners()
@@ -36,25 +33,18 @@ class LetterBoard(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
 
-        Timber.i(
-            "onMeasure\n" +
-                    "view size -> $measuredWidth\n"
-        )
-
         adjustWordsSize()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        for (line in lines) {
+            canvas.drawLine(line)
+        }
+
         actualLine?.let { line ->
             canvas.drawLine(line)
-
-            getWord(line)?.let {
-                actualWordListener?.invoke(it)
-            }
-        } ?: run {
-            actualWordListener?.invoke("")
         }
     }
 
@@ -65,12 +55,6 @@ class LetterBoard(
                     letterGrid.getLetterPoint(PointF(event.x, event.y))?.run {
 
                         val letter = letters[row - 1][column - 1]
-
-                        Timber.i(
-                            "down letter\n" +
-                                    "center point -> ${center.x} x ${center.y}\n" +
-                                    "letter $letter"
-                        )
 
                         actualLine = center.let { it to it }
 
@@ -84,13 +68,16 @@ class LetterBoard(
                             strokeCap = Paint.Cap.ROUND
                         }
 
-                        actualWordListener?.invoke(letter)
+                        onSelectListener?.selectWord(letter, linePaint.color)
+
                         invalidate()
                     }
                 }
 
                 override fun up(event: MotionEvent) {
                     actualLine = null
+
+                    onSelectListener?.selectWord("", linePaint.color)
 
                     invalidate()
                 }
@@ -104,13 +91,12 @@ class LetterBoard(
 
                         if (word != null) {
                             actualLine = newLine
-                        }
 
-                        Timber.i(
-                            "move letter\n" +
-                                    "center point -> ${center.x} x ${center.y}\n" +
-                                    "word -> $word"
-                        )
+                            if(onSelectListener?.selectWord(word, linePaint.color) == true) {
+                                lines.add(newLine)
+                                actualLine = null
+                            }
+                        }
 
                         invalidate()
                     }
@@ -182,12 +168,6 @@ class LetterBoard(
 
         if (letterOfLine == 0) return
 
-        Timber.i(
-            "adjust size\n" +
-                    "letter size -> ${letterGrid.letterSize}\n" +
-                    "board size -> $boardWidth X $boardWidth"
-        )
-
         for ((column, rows) in letters.withIndex()) {
             for ((row, word) in rows.withIndex()) {
 
@@ -214,8 +194,6 @@ class LetterBoard(
     }
 
     private fun createPuzzle(letterOfLine: Int) {
-
-        Timber.i("create puzzle $letterOfLine x $letterOfLine")
 
         if (letterOfLine <= 0) throw IllegalArgumentException("letterOfLine be 0 or negative")
 
@@ -246,8 +224,6 @@ class LetterBoard(
 
         this.letters = letters
 
-        Timber.i("create puzzle $letters x $letters")
-
         if (letters.any { it.size != letters.size })
             throw IllegalArgumentException("horizontal and vertical length must be equals")
 
@@ -260,7 +236,6 @@ class LetterBoard(
                     setText(column, row, word)
                 }
             }
-
         }
     }
 
@@ -268,4 +243,8 @@ class LetterBoard(
         val letterView: LetterView = findViewWithTag("${column}x$row")
         letterView.text = word
     }
+}
+
+interface OnSelectListener {
+    fun selectWord(word: String, color: Int): Boolean
 }
