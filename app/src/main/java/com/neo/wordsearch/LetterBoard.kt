@@ -10,6 +10,8 @@ import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class LetterBoard(
     context: Context, attr: AttributeSet? = null
@@ -20,7 +22,7 @@ class LetterBoard(
     private lateinit var letterGrid: LetterGrid
 
     private var letterOfLine = 0
-    private val boardWidth get() = measuredWidth
+    private val boardWidth get() = max(measuredWidth, measuredHeight)
     private var actualLine: Line? = null
     private val lines: Stack<Line> = Stack()
 
@@ -31,7 +33,8 @@ class LetterBoard(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+        val maxMeasureSpec = max(widthMeasureSpec, heightMeasureSpec)
+        super.onMeasure(maxMeasureSpec, maxMeasureSpec)
 
         adjustWordsSize()
     }
