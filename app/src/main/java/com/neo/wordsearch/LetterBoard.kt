@@ -16,12 +16,12 @@ class LetterBoard(
 ) : FrameLayout(context, attr) {
 
     private lateinit var letters: Array<Array<String>>
-    private lateinit var linePaint: Paint
+
     private lateinit var letterGrid: LetterGrid
 
     private var letterOfLine = 0
     private val boardWidth get() = measuredWidth
-    private var actualLine: Pair<PointF, PointF>? = null
+    private var actualLine: Line? = null
     private val lines: Stack<Line> = Stack()
 
     var onSelectListener: OnSelectListener? = null
@@ -56,14 +56,14 @@ class LetterBoard(
 
                         val letter = letters[row - 1][column - 1]
 
-                        actualLine = center.let { it to it }
-
                         val letterView: LetterView =
                             findViewWithTag("${column - 1}x${row - 1}")
 
-                        linePaint = getPaint(letterView.textSize)
+                        actualLine = center.let {
+                            Line(start = it, end = it, paint = getPaint(letterView.textSize))
+                        }
 
-                        onSelectListener?.selection(letter, linePaint.color)
+                        onSelectListener?.selection(letter, actualLine!!.paint.color)
 
                         invalidate()
                     }
@@ -72,7 +72,7 @@ class LetterBoard(
                 override fun up(event: MotionEvent) {
                     actualLine = null
 
-                    onSelectListener?.selection("", linePaint.color)
+                    onSelectListener?.selection("", null)
 
                     invalidate()
                 }
@@ -80,25 +80,18 @@ class LetterBoard(
                 override fun move(event: MotionEvent) {
                     letterGrid.getLetterPoint(PointF(event.x, event.y))?.run {
 
-                        val newLine = actualLine?.copy(second = center)
+                        val newLine = actualLine?.copy(end = center)
 
                         val word = newLine?.let { getWord(it) }
 
                         if (word != null) {
                             actualLine = newLine
 
-                            if (onSelectListener?.selection(word, linePaint.color) == true) {
+                            if (onSelectListener?.selection(word, newLine.paint.color) == true) {
 
-                                lines.add(
-                                    Line(
-                                        start = newLine.first,
-                                        end = newLine.second,
-                                        paint = linePaint
-                                    )
-                                )
+                                lines.add(newLine)
 
                                 actualLine = null
-                                onSelectListener?.selection("", linePaint.color)
                             }
                         }
 
@@ -125,35 +118,25 @@ class LetterBoard(
     }
 
     private fun Canvas.drawLine(
-        line: Pair<PointF, PointF>
+        line: Line
     ) = with(line) {
-        if (first.x == second.x && first.y == second.y) {
+        if (isPoint) {
             drawCircle(
-                first.x, first.y,
-                linePaint.strokeWidth / 2f, linePaint
+                start.x, start.y,
+                paint.strokeWidth / 2f, paint
             )
         } else {
             drawLine(
-                first.x, first.y,
-                second.x, second.y,
-                linePaint
+                start.x, start.y,
+                end.x, end.y,
+                paint
             )
         }
     }
 
-    private fun Canvas.drawLine(
-        line: Line
-    ) = with(line) {
-        drawLine(
-            start.x, start.y,
-            end.x, end.y,
-            paint
-        )
-    }
-
-    private fun getWord(actualLine: Pair<PointF, PointF>): String? {
-        val letterA = letterGrid.getLetterPoint(actualLine.first)
-        val letterB = letterGrid.getLetterPoint(actualLine.second)
+    private fun getWord(line: Line): String? {
+        val letterA = letterGrid.getLetterPoint(line.start)
+        val letterB = letterGrid.getLetterPoint(line.end)
 
         if (letterA == null || letterB == null) return null
 
@@ -282,5 +265,5 @@ class LetterBoard(
 }
 
 interface OnSelectListener {
-    fun selection(word: String, color: Int): Boolean
+    fun selection(word: String, color: Int?): Boolean
 }

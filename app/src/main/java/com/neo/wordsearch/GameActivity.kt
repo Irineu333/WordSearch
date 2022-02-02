@@ -84,8 +84,11 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         binding.containerLetterBoard.latterBoard.onSelectListener = this
     }
 
-    override fun selection(word: String, color: Int): Boolean {
+    override fun selection(word: String, color: Int?): Boolean {
         binding.tvSelection.text = word
+
+        if (color == null) return false
+
         binding.tvSelection.setTextColor(color)
 
         for ((i, it) in words.withIndex()) {
