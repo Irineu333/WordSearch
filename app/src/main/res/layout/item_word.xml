@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/activity_main">
 
     <androidx.cardview.widget.CardView
+        app:cardBackgroundColor="@android:color/darker_gray"
         android:id="@+id/cv_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,14 +1,11 @@
 package com.neo.wordsearch
 
 import android.annotation.SuppressLint
-import android.text.Editable
-import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.StrikethroughSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.text.clearSpans
 import androidx.recyclerview.widget.RecyclerView
 import com.neo.wordsearch.databinding.ItemWordBinding
 

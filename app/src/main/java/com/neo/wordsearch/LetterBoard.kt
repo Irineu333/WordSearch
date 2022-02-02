@@ -63,7 +63,7 @@ class LetterBoard(
 
                         linePaint = getPaint(letterView.textSize)
 
-                        onSelectListener?.selectWord(letter, linePaint.color)
+                        onSelectListener?.selection(letter, linePaint.color)
 
                         invalidate()
                     }
@@ -72,7 +72,7 @@ class LetterBoard(
                 override fun up(event: MotionEvent) {
                     actualLine = null
 
-                    onSelectListener?.selectWord("", linePaint.color)
+                    onSelectListener?.selection("", linePaint.color)
 
                     invalidate()
                 }
@@ -87,7 +87,7 @@ class LetterBoard(
                         if (word != null) {
                             actualLine = newLine
 
-                            if (onSelectListener?.selectWord(word, linePaint.color) == true) {
+                            if (onSelectListener?.selection(word, linePaint.color) == true) {
 
                                 lines.add(
                                     Line(
@@ -98,7 +98,7 @@ class LetterBoard(
                                 )
 
                                 actualLine = null
-                                onSelectListener?.selectWord("", linePaint.color)
+                                onSelectListener?.selection("", linePaint.color)
                             }
                         }
 
@@ -127,11 +127,20 @@ class LetterBoard(
     private fun Canvas.drawLine(
         line: Pair<PointF, PointF>
     ) = with(line) {
-        drawLine(
-            first.x, first.y,
-            second.x, second.y,
-            linePaint
-        )
+        if (first.x == second.x && first.y == second.y) {
+            //single point
+            drawLine(
+                first.x, first.y,
+                second.x + 0.5f, second.y + 0.5f,
+                linePaint
+            )
+        } else {
+            drawLine(
+                first.x, first.y,
+                second.x, second.y,
+                linePaint
+            )
+        }
     }
 
     private fun Canvas.drawLine(
@@ -275,5 +284,5 @@ class LetterBoard(
 }
 
 interface OnSelectListener {
-    fun selectWord(word: String, color: Int): Boolean
+    fun selection(word: String, color: Int): Boolean
 }

@@ -1,7 +1,9 @@
 package com.neo.wordsearch
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.flexbox.FlexboxItemDecoration
 import com.neo.wordsearch.databinding.ActivityMainBinding
 import timber.log.Timber
 
@@ -19,7 +21,7 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
                 words
             }
         ).apply {
-            binding.rvWords.adapter = this
+            binding.containerWords.rvWords.adapter = this
         }
     }
 
@@ -33,9 +35,11 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
     }
 
     private fun init() {
+
         Timber.i("init")
         setupWordBoard()
         setupLetterBoard()
+        updateProgress()
     }
 
     private fun setupWordBoard() {
@@ -46,9 +50,22 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
             WordModel("JOAO"),
             WordModel("TATI"),
             WordModel("ANE"),
+            WordModel("TEST1"),
+            WordModel("TEST2"),
+            WordModel("TEST3"),
+            WordModel("TEST4"),
+            WordModel("TEST5"),
+            WordModel("TEST6"),
+            WordModel("TEST7"),
         )
 
         wordsAdapter.updateAll()
+
+        binding.containerWords.rvWords.addItemDecoration(
+            FlexboxItemDecoration(this).apply {
+                setOrientation(FlexboxItemDecoration.VERTICAL)
+            }
+        )
     }
 
     private fun setupLetterBoard() {
@@ -67,18 +84,27 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         binding.containerLetterBoard.latterBoard.onSelectListener = this
     }
 
-    override fun selectWord(word: String, color: Int): Boolean {
-        binding.tvNewWord.text = word
-        binding.tvNewWord.setTextColor(color)
+    override fun selection(word: String, color: Int): Boolean {
+        binding.tvSelection.text = word
+        binding.tvSelection.setTextColor(color)
 
         for ((i, it) in words.withIndex()) {
             if (!it.selected && it.text == word) {
                 words[i] = it.copy(color = color, selected = true)
                 wordsAdapter.updateAll()
+                updateProgress()
                 return true
             }
         }
 
         return false
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateProgress() {
+        val all = words.count()
+        val selected = words.count { it.selected }
+
+        binding.tvProgress.text = "$selected/$all"
     }
 }
