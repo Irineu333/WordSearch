@@ -128,11 +128,9 @@ class LetterBoard(
         line: Pair<PointF, PointF>
     ) = with(line) {
         if (first.x == second.x && first.y == second.y) {
-            //single point
-            drawLine(
+            drawCircle(
                 first.x, first.y,
-                second.x + 0.5f, second.y + 0.5f,
-                linePaint
+                linePaint.strokeWidth / 2f, linePaint
             )
         } else {
             drawLine(
