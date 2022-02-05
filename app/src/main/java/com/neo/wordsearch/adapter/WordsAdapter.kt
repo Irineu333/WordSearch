@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.neo.wordsearch.databinding.ItemWordBinding
+import com.neo.wordsearch.model.WordModel
 
 class WordsAdapter(
     private val getWords: () -> Array<WordModel>

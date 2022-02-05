@@ -8,6 +8,10 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
+import com.neo.wordsearch.listeners.OnTouchEvent
+import com.neo.wordsearch.model.LetterGrid
+import com.neo.wordsearch.model.Line
+import com.neo.wordsearch.view.LetterView
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.max

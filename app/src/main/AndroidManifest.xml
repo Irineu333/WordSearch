@@ -10,7 +10,7 @@
         android:name=".App"
         android:theme="@style/Theme.WordSearch">
         <activity
-            android:name=".GameActivity"
+            android:name=".ui.game.GameActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

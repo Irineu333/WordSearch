@@ -1,4 +1,4 @@
-package com.neo.wordsearch
+package com.neo.wordsearch.listeners
 
 import android.view.MotionEvent
 import android.view.View

@@ -1,4 +1,4 @@
-package com.neo.wordsearch
+package com.neo.wordsearch.ui.game
 
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -8,7 +8,10 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxItemDecoration
+import com.neo.wordsearch.OnSelectListener
+import com.neo.wordsearch.WordsAdapter
 import com.neo.wordsearch.databinding.ActivityMainBinding
+import com.neo.wordsearch.model.WordModel
 import timber.log.Timber
 
 class GameActivity : AppCompatActivity(), OnSelectListener {

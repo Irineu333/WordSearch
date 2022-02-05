@@ -1,4 +1,4 @@
-package com.neo.wordsearch
+package com.neo.wordsearch.model
 
 import android.graphics.Paint
 import android.graphics.PointF
