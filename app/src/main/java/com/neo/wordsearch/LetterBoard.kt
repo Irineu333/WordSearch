@@ -11,7 +11,6 @@ import androidx.annotation.ColorInt
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 
 class LetterBoard(
     context: Context, attr: AttributeSet? = null
@@ -75,7 +74,7 @@ class LetterBoard(
                 override fun up(event: MotionEvent) {
                     actualLine = null
 
-                    onSelectListener?.selection("", null)
+                    onSelectListener?.selection(null, null)
 
                     invalidate()
                 }
@@ -268,5 +267,5 @@ class LetterBoard(
 }
 
 interface OnSelectListener {
-    fun selection(word: String, color: Int?): Boolean
+    fun selection(word: String?, color: Int?): Boolean
 }

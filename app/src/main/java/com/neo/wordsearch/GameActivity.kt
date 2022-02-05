@@ -1,8 +1,12 @@
 package com.neo.wordsearch
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxItemDecoration
 import com.neo.wordsearch.databinding.ActivityMainBinding
 import timber.log.Timber
@@ -19,7 +23,7 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         WordsAdapter(
             getWords = {
                 words
-            }
+            },
         ).apply {
             binding.containerWords.rvWords.adapter = this
         }
@@ -62,10 +66,24 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         wordsAdapter.updateAll()
 
         binding.containerWords.rvWords.addItemDecoration(
-            FlexboxItemDecoration(this).apply {
+            object : FlexboxItemDecoration(this) {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+
+                    outRect.right += 100
+
+                    super.getItemOffsets(outRect, view, parent, state)
+                }
+            }.apply {
                 setOrientation(FlexboxItemDecoration.VERTICAL)
             }
         )
+
+        selection(null, null)
     }
 
     private fun setupLetterBoard() {
@@ -84,10 +102,13 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         binding.containerLetterBoard.latterBoard.onSelectListener = this
     }
 
-    override fun selection(word: String, color: Int?): Boolean {
-        binding.tvSelection.text = word
+    override fun selection(word: String?, color: Int?): Boolean {
+        binding.tvSelection.text = word ?: "---"
 
-        if (color == null) return false
+        if (color == null) {
+            binding.tvSelection.setTextColor(Color.DKGRAY)
+            return false
+        }
 
         binding.tvSelection.setTextColor(color)
 

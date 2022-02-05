@@ -16,7 +16,11 @@ class WordsAdapter(
     private val words get() = getWords()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordsHolder {
-        return WordsHolder(ItemWordBinding.inflate(LayoutInflater.from(parent.context)))
+        return WordsHolder(
+            ItemWordBinding.inflate(
+                LayoutInflater.from(parent.context)
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: WordsHolder, position: Int) {
@@ -34,10 +38,8 @@ class WordsAdapter(
 }
 
 class WordsHolder(
-    private val binding: ItemWordBinding
+    private val binding: ItemWordBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-
-    private val context get() = itemView.context
 
     fun bind(word: WordModel) {
         binding.cvContainer.setCardBackgroundColor(word.color)
