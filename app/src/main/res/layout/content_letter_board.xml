@@ -9,7 +9,7 @@
     app:cardCornerRadius="2dp"
     app:contentPadding="2dp"
     app:cardElevation="2dp"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_game">
 
     <com.neo.wordsearch.LetterBoard
         android:id="@+id/latter_board"

@@ -7,4 +7,4 @@
     android:layout_height="wrap_content"
     tools:listitem="@layout/item_word"
     app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-    tools:showIn="@layout/activity_main" />
+    tools:showIn="@layout/activity_game" />

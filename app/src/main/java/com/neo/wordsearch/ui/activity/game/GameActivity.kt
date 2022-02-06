@@ -1,4 +1,4 @@
-package com.neo.wordsearch.ui.game
+package com.neo.wordsearch.ui.activity.game
 
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -10,17 +10,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxItemDecoration
 import com.neo.wordsearch.OnSelectListener
 import com.neo.wordsearch.WordsAdapter
-import com.neo.wordsearch.databinding.ActivityMainBinding
+import com.neo.wordsearch.databinding.ActivityGameBinding
+import com.neo.wordsearch.model.Game
 import com.neo.wordsearch.model.WordModel
-import timber.log.Timber
 
 class GameActivity : AppCompatActivity(), OnSelectListener {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityGameBinding
 
     private val wordsAdapter by setupWordsAdapter()
 
-    private var words: Array<WordModel> = arrayOf()
+    private lateinit var words: Array<WordModel>
+    private lateinit var puzzle: Array<Array<Char>>
 
     private fun setupWordsAdapter() = lazy {
         WordsAdapter(
@@ -35,7 +36,7 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         init()
@@ -43,30 +44,20 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
 
     private fun init() {
 
-        Timber.i("init")
+        setupArguments()
         setupWordBoard()
         setupLetterBoard()
         updateProgress()
     }
 
-    private fun setupWordBoard() {
-        words = arrayOf(
-            WordModel("IRINEU"),
-            WordModel("TEFY"),
-            WordModel("GABRIEL"),
-            WordModel("JOAO"),
-            WordModel("TATI"),
-            WordModel("ANE"),
-            WordModel("TEST1"),
-            WordModel("TEST2"),
-            WordModel("TEST3"),
-            WordModel("TEST4"),
-            WordModel("TEST5"),
-            WordModel("TEST6"),
-            WordModel("TEST7"),
-        )
+    private fun setupArguments() {
+        val game = intent!!.getSerializableExtra("puzzle") as Game
 
-        wordsAdapter.updateAll()
+        words = game.words.map { WordModel(text = it) }.toTypedArray()
+        puzzle = game.puzzle
+    }
+
+    private fun setupWordBoard() {
 
         binding.containerWords.rvWords.addItemDecoration(
             object : FlexboxItemDecoration(this) {
@@ -86,22 +77,13 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
             }
         )
 
+        wordsAdapter.updateAll()
+
         selection(null, null)
     }
 
     private fun setupLetterBoard() {
-        binding.containerLetterBoard.latterBoard.renderPuzzle(
-            arrayOf(
-                arrayOf("I", "R", "I", "N", "E", "U", "O"),
-                arrayOf("E", "S", "G", "T", "L", "M", "O"),
-                arrayOf("I", "J", "E", "N", "A", "F", "Y"),
-                arrayOf("M", "O", "O", "P", "K", "T", "A"),
-                arrayOf("G", "A", "B", "R", "I", "E", "L"),
-                arrayOf("M", "O", "O", "P", "K", "F", "K"),
-                arrayOf("E", "S", "T", "E", "K", "Y", "K"),
-            )
-        )
-
+        binding.containerLetterBoard.latterBoard.renderPuzzle(puzzle)
         binding.containerLetterBoard.latterBoard.onSelectListener = this
     }
 
@@ -116,7 +98,7 @@ class GameActivity : AppCompatActivity(), OnSelectListener {
         binding.tvSelection.setTextColor(color)
 
         for ((i, it) in words.withIndex()) {
-            if (!it.selected && it.text == word) {
+            if (!it.selected && it.text.uppercase() == word?.uppercase()) {
                 words[i] = it.copy(color = color, selected = true)
                 wordsAdapter.updateAll()
                 updateProgress()

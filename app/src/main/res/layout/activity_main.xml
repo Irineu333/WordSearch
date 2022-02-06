@@ -1,62 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.game.GameActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
 
-    <include
-        android:layout_marginTop="8dp"
-        android:id="@+id/container_words"
-        layout="@layout/content_words"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragments"
+        tools:layout="@layout/fragment_play"
+        android:name="com.neo.wordsearch.ui.fragment.PlayFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <FrameLayout
-        android:id="@+id/fl_head"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:paddingHorizontal="8dp"
-            android:background="@drawable/bg_selection"
-            android:id="@+id/tv_selection"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="18sp"
-            tools:text="selection" />
-
-    </FrameLayout>
-
-    <include
-        android:id="@+id/container_letter_board"
-        layout="@layout/content_letter_board"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <FrameLayout
-        android:id="@+id/fl_baseboard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
-
-        <TextView
-            android:id="@+id/tv_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="18sp"
-            tools:text="x/y" />
-
-    </FrameLayout>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

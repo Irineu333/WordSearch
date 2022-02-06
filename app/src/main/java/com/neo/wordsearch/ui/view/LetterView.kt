@@ -1,4 +1,4 @@
-package com.neo.wordsearch.view
+package com.neo.wordsearch.ui.view
 
 import android.content.Context
 import android.util.AttributeSet

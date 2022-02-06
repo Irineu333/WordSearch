@@ -11,7 +11,7 @@ import androidx.annotation.ColorInt
 import com.neo.wordsearch.listeners.OnTouchEvent
 import com.neo.wordsearch.model.LetterGrid
 import com.neo.wordsearch.model.Line
-import com.neo.wordsearch.view.LetterView
+import com.neo.wordsearch.ui.view.LetterView
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
@@ -20,7 +20,7 @@ class LetterBoard(
     context: Context, attr: AttributeSet? = null
 ) : FrameLayout(context, attr) {
 
-    private lateinit var letters: Array<Array<String>>
+    private lateinit var letters: Array<Array<Char>>
 
     private lateinit var letterGrid: LetterGrid
 
@@ -69,7 +69,7 @@ class LetterBoard(
                             Line(start = it, end = it, paint = getPaint(letterView.textSize))
                         }
 
-                        onSelectListener?.selection(letter, actualLine!!.paint.color)
+                        onSelectListener?.selection(letter.toString(), actualLine!!.paint.color)
 
                         invalidate()
                     }
@@ -194,7 +194,7 @@ class LetterBoard(
         if (letterOfLine == 0) return
 
         for ((column, rows) in letters.withIndex()) {
-            for ((row, word) in rows.withIndex()) {
+            for ((row, letter) in rows.withIndex()) {
 
                 val wordPoint = letterGrid
                     .getLetterPoint(row + 1, column + 1)
@@ -205,7 +205,7 @@ class LetterBoard(
                 letterView.x = wordPoint.start
                 letterView.y = wordPoint.top
 
-                letterView.text = word
+                letterView.text = letter.toString()
 
                 letterView.layoutParams.apply {
 
@@ -232,11 +232,11 @@ class LetterBoard(
         removeAllViews()
 
         for ((column, rows) in letters.withIndex()) {
-            for ((row, word) in rows.withIndex()) {
+            for ((row, letter) in rows.withIndex()) {
                 addView(
                     LetterView(context).apply {
                         tag = "${column}x$row"
-                        text = word
+                        text = letter.toString()
                     }, row
                 )
             }
@@ -245,7 +245,7 @@ class LetterBoard(
         adjustWordsSize()
     }
 
-    fun renderPuzzle(letters: Array<Array<String>>) {
+    fun renderPuzzle(letters: Array<Array<Char>>) {
 
         this.letters = letters
 
@@ -257,8 +257,8 @@ class LetterBoard(
         } else {
 
             for ((column, rows) in letters.withIndex()) {
-                for ((row, word) in rows.withIndex()) {
-                    setText(column, row, word)
+                for ((row, letter) in rows.withIndex()) {
+                    setText(column, row, letter.toString())
                 }
             }
         }
