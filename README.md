@@ -3,4 +3,4 @@
 Caça palavras para android.
 
 # Reiniciado
-Esse projeto foi reiniciado em **jetpack compose** em [outro repositório](https://github.com/Irineu333/WordSearch).
+Esse projeto foi reiniciado com **jetpack compose** em [outro repositório](https://github.com/Irineu333/WordSearch).
